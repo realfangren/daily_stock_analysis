@@ -730,10 +730,17 @@ class YfinanceFetcher(BaseFetcher):
             if high is not None and low is not None and prev_close is not None and prev_close > 0:
                 amplitude = ((high - low) / prev_close) * 100
 
-            # 获取股票名称
+            # 获取股票名称及估值指标
+            pe_ratio = None
+            pb_ratio = None
             try:
-                info_name = ticker.info.get('shortName', '') or ticker.info.get('longName', '') or ''
+                info_dict = ticker.info
+                info_name = info_dict.get('shortName', '') or info_dict.get('longName', '') or ''
                 name = info_name if is_meaningful_stock_name(info_name, symbol) else STOCK_NAME_MAP.get(symbol, '')
+                pe_ratio = info_dict.get('trailingPE')
+                if pe_ratio is None:
+                    pe_ratio = info_dict.get('forwardPE')
+                pb_ratio = info_dict.get('priceToBook')
             except Exception:
                 name = STOCK_NAME_MAP.get(symbol, '')
 
@@ -753,8 +760,8 @@ class YfinanceFetcher(BaseFetcher):
                 high=high,
                 low=low,
                 pre_close=prev_close,
-                pe_ratio=None,
-                pb_ratio=None,
+                pe_ratio=pe_ratio,
+                pb_ratio=pb_ratio,
                 total_mv=market_cap,
                 circ_mv=None,
             )
