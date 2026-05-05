@@ -2,7 +2,8 @@ name: 每日股票分析
 
 on:
   schedule:
-    - cron: '0 12 * * 1-5'
+    - cron: '45 10 * * 1-5'
+      timezone: "Europe/London"
   
   # 手动触发
   workflow_dispatch:
